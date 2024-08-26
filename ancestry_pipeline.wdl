@@ -97,7 +97,7 @@ workflow agd_ancestry_workflow{
                     relatives_exclude = spike_in_relatives_exclude
             }
 
-            call ConvertPgenToBed {
+            call ConvertPgenToBed as ConvertPgenToBed_spike_in {
                 input: 
                     pgen = pgen_file,
                     pvar = pvar_file,
@@ -106,9 +106,9 @@ workflow agd_ancestry_workflow{
 
             call Merge1000genomesAGD {
                 input:
-                    agd_bed_file = PGenToBed.out_bed,
-                    agd_bim_file = PGenToBed.out_bim,
-                    agd_fam_file = PGenToBed.out_fam,
+                    agd_bed_file = ConvertPgenToBed_spike_in.out_bed,
+                    agd_bim_file = ConvertPgenToBed_spike_in_bim.out_bim,
+                    agd_fam_file = ConvertPgenToBed_spike_in.out_fam,
                     TGP_bed_file = SubsetChromosomeTGP.out_bed_file,
                     TGP_bim_file = SubsetChromosomeTGP.out_bim_file,
                     TGP_fam_file = SubsetChromosomeTGP.out_fam_file
