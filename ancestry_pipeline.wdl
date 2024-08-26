@@ -37,6 +37,9 @@ workflow agd_ancestry_workflow{
         # optional inputs for PCA - required if running PCA 
 
         File? pca_variants_extract_file
+        File? pca_loadings_file
+        File? pca_af_file
+
 
         # optional inputs for spike in data - required if merging spike in data 
 
