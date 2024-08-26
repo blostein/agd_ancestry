@@ -45,7 +45,7 @@ workflow agd_ancestry_workflow{
 
         File? supervised_scope_reference_pgen_file
         File? supervised_scope_reference_pvar_file
-        File? supervsied_scope_reference_psam_file
+        File? supervised_scope_reference_psam_file
         File? supervised_scope_reference_superpop_file   
         File? supervised_scope_reference_relatives_exclude
         File? supervised_scope_reference_freq
@@ -348,24 +348,20 @@ task CalculateFreq{
 }
 
 ## for merging with spike-in datatask 
-SubsetChromosomeTGP{
-    input { 
+task SubsetChromosomeTGP {
+    input {
         File pgen_file
         File pvar_file
-        File psam_file 
-
+        File psam_file
         String chromosome
-
         File relatives_exclude
-
         Int? memory_gb = 20
-
         String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
     }
-
+    
     String out_string = "TGP_" + chromosome
     String in_chromosome = sub(chromosome, "chr", "")
-    Int disk_size = ceil(size([pgen_file, pvar_file, psam_file], "GB")  * 2)*2 + 20
+    Int disk_size = ceil(size([pgen_file, pvar_file, psam_file], "GB") * 2) * 2 + 20
     
     runtime {
         docker: docker
@@ -373,25 +369,24 @@ SubsetChromosomeTGP{
         disks: "local-disk " + disk_size + " HDD"
         memory: memory_gb + " GiB"
     }
-
-    command{ 
+    
+    command {
          plink2 \
-            --pgen ~{pgen_file} --pvar ~{pvar_file} --psam ~{psam_file} \
-            --allow-extra-chr \
-            --chr ~{in_chromosome} \
-            --remove ~{relatives_exclude} \
-            --make-bed \
-            --out ~{out_string}
+             --pgen ~{pgen_file} --pvar ~{pvar_file} --psam ~{psam_file} \
+             --allow-extra-chr \
+             --chr ~{in_chromosome} \
+             --remove ~{relatives_exclude} \
+             --make-bed \
+             --out ~{out_string}
     }
-
-    output{
-
+    
+    output {
         File out_bed_file = out_string + ".bed"
         File out_bim_file = out_string + ".bim"
         File out_fam_file = out_string + ".fam"
-
     }
 }
+
 
 task ConvertPgenToBed{
     input {
@@ -404,7 +399,6 @@ task ConvertPgenToBed{
         String? out_prefix
 
         Int? memory_gb = 20
-
     }
 
     Int disk_size = ceil(size([pgen, pvar, psam], "GB")  * 2)*2 + 20
@@ -739,7 +733,6 @@ task QCAllelesBim{
 
         String docker = "blosteinf/r_utils_terra:0.1"
         Int memory_gb = 20
-
     }
 
     Int disk_size = ceil(size([bim_file, freq_file], "GB")  * 2) + 20
