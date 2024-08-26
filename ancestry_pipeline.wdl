@@ -229,9 +229,9 @@ workflow agd_ancestry_workflow{
 
         call ConvertPgenToBed as ConvertPgenToBedForScope{
             input: 
-                pgen = MergePgenFiles.output_pgen_file, 
-                pvar = MergePgenFiles.output_pvar_file,
-                psam = MergePgenFiles.output_psam_file, 
+                pgen = MergePgenFilesForScope.output_pgen_file, 
+                pvar = MergePgenFilesForScope.output_pvar_file,
+                psam = MergePgenFilesForScope.output_psam_file, 
         }
 
         call RunScopeUnsupervised{    
