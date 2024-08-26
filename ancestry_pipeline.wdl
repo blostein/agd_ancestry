@@ -20,7 +20,7 @@ workflow agd_ancestry_workflow{
         Boolean run_pca = true
         Boolean run_scope= true
 
-        # required inputs: original data as array of chromosomes 
+        # required inputs original data as array of chromosomes 
 
         Array[File] source_pgen_files
         Array[File] source_pvar_files
@@ -119,7 +119,6 @@ workflow agd_ancestry_workflow{
     }
 
     #now we can proceed with the pipeline, using select_first to get the first non empty array value to select either the merged or original input files 
-    ##ie select_first([Merge1000genomesAGD.out_pgen_file, source_pgen_files])
 
     Array[File] my_pgen_files=select_first([Merge1000genomesAGD.out_pgen_file, source_pgen_files])
     Array[File] my_pvar_files=select_first([Merge1000genomesAGD.out_pvar_file, source_pvar_files])
