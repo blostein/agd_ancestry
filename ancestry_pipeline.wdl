@@ -360,7 +360,7 @@ task SubsetChromosomeTGP {
         File? pgen_file
         File? pvar_file
         File? psam_file
-        String? chromosome
+        String chromosome
         File? relatives_exclude
         Int? memory_gb = 20
         String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
