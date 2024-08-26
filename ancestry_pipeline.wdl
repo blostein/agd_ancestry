@@ -106,21 +106,21 @@ workflow agd_ancestry_workflow{
 
             call Merge1000genomesAGD {
                 input:
-                    agd_bed_file = ConvertPgenToBed_spike_in.out_bed,
-                    agd_bim_file = ConvertPgenToBed_spike_in_bim.out_bim,
-                    agd_fam_file = ConvertPgenToBed_spike_in.out_fam,
-                    TGP_bed_file = SubsetChromosomeTGP.out_bed_file,
-                    TGP_bim_file = SubsetChromosomeTGP.out_bim_file,
-                    TGP_fam_file = SubsetChromosomeTGP.out_fam_file
+                    agd_bed_file = ConvertPgenToBed_spike_in.convert_Pgen_out_bed,
+                    agd_bim_file = ConvertPgenToBed_spike_in_bim.convert_Pgen_out_bim,
+                    agd_fam_file = ConvertPgenToBed_spike_in.convert_Pgen_out_fam,
+                    TGP_bed_file = SubsetChromosomeTGP.subset_reference_out_bed_file,
+                    TGP_bim_file = SubsetChromosomeTGP.subset_reference_out_bim_file,
+                    TGP_fam_file = SubsetChromosomeTGP.subset_reference_out_fam_file
             }
         }
     }
 
     #now we can proceed with the pipeline, using select_first to get the first non empty array value to select either the merged or original input files 
 
-    Array[File] my_pgen_files=select_first([Merge1000genomesAGD.out_pgen_file, source_pgen_files])
-    Array[File] my_pvar_files=select_first([Merge1000genomesAGD.out_pvar_file, source_pvar_files])
-    Array[File] my_psam_files=select_first([Merge1000genomesAGD.out_psam_file, source_psam_files])
+    Array[File] my_pgen_files=select_first([Merge1000genomesAGD.merge_spike_out_pgen_file, source_pgen_files])
+    Array[File] my_pvar_files=select_first([Merge1000genomesAGD.merge_spike_out_pvar_file, source_pvar_files])
+    Array[File] my_psam_files=select_first([Merge1000genomesAGD.merge_spike_out_psam_file, source_psam_files])
 
     if(run_pca){
         scatter (idx in range(length(chromosomes))) {
@@ -151,9 +151,9 @@ workflow agd_ancestry_workflow{
 
         call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
             input:
-                pgen_files = ExtractVariants.output_pgen_file,
-                pvar_files = ExtractVariants.output_pvar_file,
-                psam_files = ExtractVariants.output_psam_file,
+                pgen_files = ExtractVariants.extract_variants_output_pgen_file,
+                pvar_files = ExtractVariants.extract_variants_output_pvar_file,
+                psam_files = ExtractVariants.extract_variants_output_psam_file,
                 target_prefix = target_prefix
         }
 
@@ -217,9 +217,9 @@ workflow agd_ancestry_workflow{
         }
         call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
             input:
-                pgen_files = PreparePlink.output_pgen_file,
-                pvar_files = PreparePlink.output_pvar_file,
-                psam_files = PreparePlink.output_psam_file,
+                pgen_files = PreparePlink.prepare_plink_unsupervised_output_pgen_file,
+                pvar_files = PreparePlink.prepare_plink_unsupervised_output_pvar_file,
+                psam_files = PreparePlink.prepare_plink_unsupervised_output_psam_file,
                 target_prefix = target_prefix
         }
 
@@ -232,9 +232,9 @@ workflow agd_ancestry_workflow{
 
         call RunScopeUnsupervised{    
             input:
-                bed_file = ConvertPgenToBed.out_bed,
-                bim_file = ConvertPgenToBed.out_bim,
-                fam_file = ConvertPgenToBed.out_fam,
+                bed_file = ConvertPgenToBed.convert_Pgen_out_bed,
+                bim_file = ConvertPgenToBed.convert_Pgen_out_bim,
+                fam_file = ConvertPgenToBed.convert_Pgen_out_fam,
                 K = K,
                 output_string = target_prefix,
                 seed = seed
@@ -243,23 +243,23 @@ workflow agd_ancestry_workflow{
         if(scope_supervised){
             call QCAllelesBim{
                 input:
-                    bim_file = ConvertPgenToBed.out_bim,
+                    bim_file = ConvertPgenToBed.convert_Pgen_out_bim,
                     freq_file = select_first([CalculateFreq.freq_file, supervised_scope_reference_freq])
             }
 
             call PreparePlinkSupervised{
                 input:
-                    bed_file = ConvertPgenToBed.out_bed,
-                    bim_file = ConvertPgenToBed.out_bim,
-                    fam_file = ConvertPgenToBed.out_fam,
+                    bed_file = ConvertPgenToBed.convert_Pgen_out_bed,
+                    bim_file = ConvertPgenToBed.convert_Pgen_out_bim,
+                    fam_file = ConvertPgenToBed.convert_Pgen_out_fam,
                     variant_list = QCAllelesBim.out_variants
             }
 
             call RunScopeSupervised{
                 input:
-                    bed_file = PreparePlinkSupervised.out_bed,
-                    bim_file = PreparePlinkSupervised.out_bim,
-                    fam_file = PreparePlinkSupervised.out_fam,
+                    bed_file = PreparePlinkSupervised.prepare_plink_supervised_out_bed,
+                    bim_file = PreparePlinkSupervised.prepare_plink_supervised_out_bim,
+                    fam_file = PreparePlinkSupervised.prepare_plink_supervised_out_fam,
                     K = K,
                     output_string = target_prefix,
                     seed = seed,
@@ -381,9 +381,9 @@ task SubsetChromosomeTGP {
     }
     
     output {
-        File out_bed_file = out_string + ".bed"
-        File out_bim_file = out_string + ".bim"
-        File out_fam_file = out_string + ".fam"
+        File subset_reference_out_bed_file = out_string + ".bed"
+        File subset_reference_out_bim_file = out_string + ".bim"
+        File subset_reference_out_fam_file = out_string + ".fam"
     }
 }
 
@@ -421,9 +421,9 @@ task ConvertPgenToBed{
     }
 
     output {
-        File out_bed = "${out_string}.bed"
-        File out_bim = "${out_string}.bim"
-        File out_fam = "${out_string}.fam"
+        File convert_Pgen_out_bed = "${out_string}.bed"
+        File convert_Pgen_out_bim = "${out_string}.bim"
+        File convert_Pgen_out_fam = "${out_string}.fam"
     }
 }
 
@@ -534,9 +534,9 @@ task Merge1000genomesAGD{
     }
 
     output{
-        File out_pgen_file = out_string + ".pgen"
-        File out_pvar_file = out_string + ".pvar"
-        File out_psam_file = out_string + ".psam"
+        File merge_spike_out_pgen_file = out_string + ".pgen"
+        File merge_spike_out_pvar_file = out_string + ".pvar"
+        File merge_spike_out_psam_file = out_string + ".psam"
     }
 }
 
@@ -593,9 +593,9 @@ task ExtractVariants{
   }
 
   output {
-    File output_pgen_file = new_pgen
-    File output_pvar_file = new_pvar
-    File output_psam_file = new_psam
+    File extract_variants_output_pgen_file = new_pgen
+    File extract_variants_output_pvar_file = new_pvar
+    File extract_variants_output_psam_file = new_psam
   }
 
 }
@@ -720,9 +720,9 @@ task PreparePlink{
   }
 
   output {
-    File output_pgen_file = new_pgen
-    File output_pvar_file = new_pvar
-    File output_psam_file = new_psam
+    File prepare_plink_unsupervised_output_pgen_file = new_pgen
+    File prepare_plink_unsupervised_output_pvar_file = new_pvar
+    File prepare_plink_unsupervised_output_psam_file = new_psam
   }
 }
 
@@ -792,9 +792,9 @@ task PreparePlinkSupervised{
     }
 
     output {
-        File out_bed = new_bed
-        File out_bim = new_bim
-        File out_fam = new_fam
+        File prepare_plink_supervised_out_bed = new_bed
+        File prepare_plink_supervised_out_bim = new_bim
+        File prepare_plink_supervised_out_fam = new_fam
         String out_prefix = out_string
     }
 
