@@ -30,6 +30,10 @@ workflow agd_ancestry_workflow{
 
         File id_map_file
 
+        # optional outputs for exporting 
+        String? project_id
+        String? target_gcp_folder
+
         # optional inputs for PCA - required if running PCA 
 
         File? pca_variants_extract_file
