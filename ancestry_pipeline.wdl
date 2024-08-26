@@ -305,11 +305,11 @@ workflow agd_ancestry_workflow{
 ## for frequency calculation 
 task CalculateFreq{
     input{ 
-        File pgen_file
-        File pvar_file
-        File psam_file
-        File superpop_file
-        File relatives_exclude
+        File? pgen_file
+        File? pvar_file
+        File? psam_file
+        File? superpop_file
+        File? relatives_exclude
 
         String? plink2_maf_filter = "--maf 0.001"
 
@@ -357,11 +357,11 @@ task CalculateFreq{
 ## for merging with spike-in datatask 
 task SubsetChromosomeTGP {
     input {
-        File pgen_file
-        File pvar_file
-        File psam_file
-        String chromosome
-        File relatives_exclude
+        File? pgen_file
+        File? pvar_file
+        File? psam_file
+        String? chromosome
+        File? relatives_exclude
         Int? memory_gb = 20
         String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
     }
@@ -397,9 +397,9 @@ task SubsetChromosomeTGP {
 
 task ConvertPgenToBed{
     input {
-        File pgen 
-        File pvar 
-        File psam 
+        File? pgen 
+        File? pvar 
+        File? psam 
 
         String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
 
@@ -436,15 +436,15 @@ task ConvertPgenToBed{
 
 task Merge1000genomesAGD{
     input{
-        File agd_bed_file
-        File agd_bim_file
-        File agd_fam_file
+        File? agd_bed_file
+        File? agd_bim_file
+        File? agd_fam_file
 
-        File TGP_bed_file
-        File TGP_bim_file
-        File TGP_fam_file
+        File? TGP_bed_file
+        File? TGP_bim_file
+        File? TGP_fam_file
 
-        String chromosome
+        String? chromosome
 
         Int? memory_gb = 20
 
@@ -550,15 +550,15 @@ task Merge1000genomesAGD{
 ## for PCA 
 task ExtractVariants{
   input {
-    File pgen_file
-    File pvar_file
-    File psam_file 
+    File? pgen_file
+    File? pvar_file
+    File? psam_file 
 
-    String chromosome
+    String? chromosome
 
-    File variants_extract_file
+    File? variants_extract_file
 
-    Int memory_gb
+    Int? memory_gb = 20
 
     String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
   }
@@ -609,12 +609,12 @@ task ExtractVariants{
 
 task ProjectPCA{
   input{
-    File pgen_file
-    File pvar_file
-    File psam_file
-    File PCA_loadings
-    File PCA_AF
-    String OUTNAME
+    File? pgen_file
+    File? pvar_file
+    File? psam_file
+    File? PCA_loadings
+    File? PCA_AF
+    String? OUTNAME
 
     Int memory_gb = 20
     Int cpu = 8
@@ -659,15 +659,15 @@ task ProjectPCA{
 ## for scope
 task PreparePlink{
   input {
-    File pgen_file
-    File pvar_file
-    File psam_file 
+    File? pgen_file
+    File? pvar_file
+    File? psam_file 
 
-    String chromosome
+    String? chromosome
 
     String? plink2_maf_filter = "--maf 0.01"
     String? plink2_LD_filter_option = "--indep-pairwise 50000 80 0.1"
-    File long_range_ld_file
+    File? long_range_ld_file
 
 
     Int memory_gb = 20
@@ -735,7 +735,7 @@ task PreparePlink{
 
 task QCAllelesBim{
     input {
-        File bim_file
+        File? bim_file
         File? freq_file
 
         String docker = "blosteinf/r_utils_terra:0.1"
@@ -764,11 +764,11 @@ task QCAllelesBim{
 
 task PreparePlinkSupervised{
     input { 
-        File bed_file
-        File bim_file
-        File fam_file 
+        File? bed_file
+        File? bim_file
+        File? fam_file 
 
-        File variant_list 
+        File? variant_list 
         String? out_string = "variant_filtered"
 
         String docker = "hkim298/plink_1.9_2.0:20230116_20230707"
@@ -810,13 +810,13 @@ task PreparePlinkSupervised{
 task RunScopeUnsupervised{
     input{
 
-        File bed_file
-        File bim_file
-        File fam_file
+        File? bed_file
+        File? bim_file
+        File? fam_file
 
-        Int K
-        String output_string
-        Int seed
+        Int? K
+        String? output_string
+        Int? seed
 
         Int memory_gb = 60
         String docker = "blosteinf/scope:0.1"
@@ -856,13 +856,13 @@ task RunScopeUnsupervised{
 task RunScopeSupervised{
     input{
        
-        File bed_file
-        File bim_file
-        File fam_file
+        File? bed_file
+        File? bim_file
+        File? fam_file
 
-        Int K
-        String output_string
-        Int seed
+        Int? K
+        String? output_string
+        Int? seed
 
         File? topmed_freq
 
