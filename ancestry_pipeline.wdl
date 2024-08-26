@@ -128,7 +128,7 @@ workflow agd_ancestry_workflow{
             File pgen_file_for_pca = my_pgen_files[idx]
             File pvar_file_for_pca = my_pvar_files[idx]
             File psam_file_for_pca = my_psam_files[idx]
-            String replaced_sample_name_for_pca = "~{chromosome}.psam"
+            String replaced_sample_name_for_pca = "~{chromosome_for_pca}.psam"
 
             #I think I need this to get the IDs correctly as GRIDS
 
@@ -194,7 +194,7 @@ workflow agd_ancestry_workflow{
             File pgen_file_for_scope = my_pgen_files[idx]
             File pvar_file_for_scope = my_pvar_files[idx]
             File psam_file_for_scope = my_psam_files[idx]
-            String replaced_sample_name_for_scope = "~{chromosome}.psam"
+            String replaced_sample_name_for_scope = "~{chromosome_for_scope}.psam"
 
             #I think I need this to get the IDs correctly as GRIDS
 
