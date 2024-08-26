@@ -810,13 +810,13 @@ task PreparePlinkSupervised{
 task RunScopeUnsupervised{
     input{
 
-        File? bed_file
-        File? bim_file
-        File? fam_file
+        File bed_file
+        File bim_file
+        File fam_file
 
-        Int? K
-        String? output_string
-        Int? seed
+        Int K
+        String output_string
+        Int seed
 
         Int memory_gb = 60
         String docker = "blosteinf/scope:0.1"
@@ -856,13 +856,13 @@ task RunScopeUnsupervised{
 task RunScopeSupervised{
     input{
        
-        File? bed_file
-        File? bim_file
-        File? fam_file
+        File bed_file
+        File bim_file
+        File fam_file
 
-        Int? K
-        String? output_string
-        Int? seed
+        Int K
+        String output_string
+        Int seed
 
         File? topmed_freq
 
