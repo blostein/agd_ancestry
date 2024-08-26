@@ -114,7 +114,7 @@ workflow agd_ancestry_workflow{
             call Merge1000genomesAGD {
                 input:
                     agd_bed_file = ConvertPgenToBed_spike_in.convert_Pgen_out_bed,
-                    agd_bim_file = ConvertPgenToBed_spike_in_bim.convert_Pgen_out_bim,
+                    agd_bim_file = ConvertPgenToBed_spike_in.convert_Pgen_out_bim,
                     agd_fam_file = ConvertPgenToBed_spike_in.convert_Pgen_out_fam,
                     TGP_bed_file = SubsetChromosomeTGP.subset_reference_out_bed_file,
                     TGP_bim_file = SubsetChromosomeTGP.subset_reference_out_bim_file,
