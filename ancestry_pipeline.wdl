@@ -93,7 +93,7 @@ workflow agd_ancestry_workflow{
                     pgen_file = spike_in_pgen_file,
                     pvar_file = spike_in_pvar_file,
                     psam_file = spike_in_psam_file,
-                    chromosome = chromosome,
+                    chromosome = chromosome_for_spike_in,
                     relatives_exclude = spike_in_relatives_exclude
             }
 
@@ -124,11 +124,11 @@ workflow agd_ancestry_workflow{
 
     if(run_pca){
         scatter (idx in range(length(chromosomes))) {
-            String chromosome = chromosomes[idx]
+            String chromosome_for_pca = chromosomes[idx]
             File pgen_file_for_pca = my_pgen_files[idx]
             File pvar_file_for_pca = my_pvar_files[idx]
             File psam_file_for_pca = my_psam_files[idx]
-            String replaced_sample_name = "~{chromosome}.psam"
+            String replaced_sample_name_for_pca = "~{chromosome}.psam"
 
             #I think I need this to get the IDs correctly as GRIDS
 
@@ -136,7 +136,7 @@ workflow agd_ancestry_workflow{
                 input:
                     input_psam = psam_file_for_pca,
                     id_map_file = id_map_file,
-                    output_psam = replaced_sample_name
+                    output_psam = replaced_sample_name_for_pca
             }
 
             call ExtractVariants as ExtractVariants{
@@ -144,7 +144,7 @@ workflow agd_ancestry_workflow{
                     pgen_file = pgen_file_for_pca,
                     pvar_file = pvar_file_for_pca,
                     psam_file = ReplaceICAIdWithGridForPCA.output_psam,
-                    chromosome = chromosome,
+                    chromosome = chromosome_for_pca,
                     variants_extract_file = pca_variants_extract_file
             }
         }
@@ -190,11 +190,11 @@ workflow agd_ancestry_workflow{
 
     if(run_scope){
         scatter (idx in range(length(chromosomes))) {
-            String chromosome = chromosomes[idx]
+            String chromosome_for_scope = chromosomes[idx]
             File pgen_file_for_scope = my_pgen_files[idx]
             File pvar_file_for_scope = my_pvar_files[idx]
             File psam_file_for_scope = my_psam_files[idx]
-            String replaced_sample_name = "~{chromosome}.psam"
+            String replaced_sample_name_for_scope = "~{chromosome}.psam"
 
             #I think I need this to get the IDs correctly as GRIDS
 
@@ -202,7 +202,7 @@ workflow agd_ancestry_workflow{
                 input:
                     input_psam = psam_file_for_scope,
                     id_map_file = id_map_file,
-                    output_psam = replaced_sample_name
+                    output_psam = replaced_sample_name_for_scope
             }
             call PreparePlink as PreparePlink{
                 input:
@@ -212,7 +212,7 @@ workflow agd_ancestry_workflow{
                     long_range_ld_file = scope_long_range_ld_file,
                     plink2_maf_filter = scope_plink2_maf_filter,
                     plink2_LD_filter_option = scope_plink2_LD_filter_option,
-                    chromosome = chromosome 
+                    chromosome = chromosome_for_scope 
             }
         }
         call http_GenotypeUtils.MergePgenFiles as MergePgenFilesForScope{
