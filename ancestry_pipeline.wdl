@@ -121,9 +121,9 @@ workflow agd_ancestry_workflow{
     #now we can proceed with the pipeline, using select_first to get the first non empty array value to select either the merged or original input files 
     ##ie select_first([Merge1000genomesAGD.out_pgen_file, source_pgen_files])
 
-    my_pgen_files=select_first([Merge1000genomesAGD.out_pgen_file, source_pgen_files])
-    my_pvar_files=select_first([Merge1000genomesAGD.out_pvar_file, source_pvar_files])
-    my_psam_files=select_first([Merge1000genomesAGD.out_psam_file, source_psam_files])
+    Array[File] my_pgen_files=select_first([Merge1000genomesAGD.out_pgen_file, source_pgen_files])
+    Array[File] my_pvar_files=select_first([Merge1000genomesAGD.out_pvar_file, source_pvar_files])
+    Array[File] my_psam_files=select_first([Merge1000genomesAGD.out_psam_file, source_psam_files])
 
     if(run_pca){
         scatter (idx in range(length(chromosomes))) {
