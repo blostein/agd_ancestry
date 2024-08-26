@@ -70,7 +70,7 @@ workflow agd_ancestry_workflow{
             relatives_exclude = supervised_scope_reference_relatives_exclude
         }
         if(defined(target_gcp_folder)){
-            call http_GcpUtils.MoveOrCopyOneFile as CopyFile{
+            call http_GcpUtils.MoveOrCopyOneFile as CopyFileFreq{
                 input:
                     source_file = CalculateFreq.freq_file,
                     is_move_file = false,
@@ -83,10 +83,10 @@ workflow agd_ancestry_workflow{
     # If the user chose to use an external spike in, then first the spike-in data must be merged with the original data, and then the pipeline can proceed 
     if(external_spike_in){
          scatter (idx in range(length(chromosomes))) {
-            String chromosome = chromosomes[idx]
-            File pgen_file = source_pgen_files[idx]
-            File pvar_file = source_pvar_files[idx]
-            File psam_file = source_psam_files[idx]
+            String chromosome_for_spike_in = chromosomes[idx]
+            File pgen_file_for_spike_in = source_pgen_files[idx]
+            File pvar_file_file_for_spike_in = source_pvar_files[idx]
+            File psam_file_file_for_spike_in = source_psam_files[idx]
 
             call SubsetChromosomeTGP{
                 input: 
@@ -99,9 +99,9 @@ workflow agd_ancestry_workflow{
 
             call ConvertPgenToBed as ConvertPgenToBed_spike_in {
                 input: 
-                    pgen = pgen_file,
-                    pvar = pvar_file,
-                    psam = psam_file
+                    pgen = pgen_file_for_spike_in,
+                    pvar = pvar_file_file_for_spike_in,
+                    psam = psam_file_file_for_spike_in
             }
 
             call Merge1000genomesAGD {
@@ -125,31 +125,31 @@ workflow agd_ancestry_workflow{
     if(run_pca){
         scatter (idx in range(length(chromosomes))) {
             String chromosome = chromosomes[idx]
-            File pgen_file = my_pgen_files[idx]
-            File pvar_file = my_pvar_files[idx]
-            File psam_file = my_psam_files[idx]
+            File pgen_file_for_pca = my_pgen_files[idx]
+            File pvar_file_for_pca = my_pvar_files[idx]
+            File psam_file_for_pca = my_psam_files[idx]
             String replaced_sample_name = "~{chromosome}.psam"
 
             #I think I need this to get the IDs correctly as GRIDS
 
-            call http_AgdUtils.ReplaceICAIdWithGrid as ReplaceICAIdWithGrid {
+            call http_AgdUtils.ReplaceICAIdWithGrid as ReplaceICAIdWithGridForPCA {
                 input:
-                    input_psam = psam_file,
+                    input_psam = psam_file_for_pca,
                     id_map_file = id_map_file,
                     output_psam = replaced_sample_name
             }
 
             call ExtractVariants as ExtractVariants{
                 input:
-                    pgen_file = pgen_file,
-                    pvar_file = pvar_file,
-                    psam_file = ReplaceICAIdWithGrid.output_psam,
+                    pgen_file = pgen_file_for_pca,
+                    pvar_file = pvar_file_for_pca,
+                    psam_file = ReplaceICAIdWithGridForPCA.output_psam,
                     chromosome = chromosome,
                     variants_extract_file = pca_variants_extract_file
             }
         }
 
-        call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
+        call http_GenotypeUtils.MergePgenFiles as MergePgenFilesForPCA{
             input:
                 pgen_files = ExtractVariants.extract_variants_output_pgen_file,
                 pvar_files = ExtractVariants.extract_variants_output_pvar_file,
@@ -159,16 +159,16 @@ workflow agd_ancestry_workflow{
 
         call ProjectPCA{
             input: 
-                pgen_file = MergePgenFiles.output_pgen_file, 
-                pvar_file = MergePgenFiles.output_pvar_file,
-                psam_file = MergePgenFiles.output_psam_file,  
+                pgen_file = MergePgenFilesForPCA.output_pgen_file, 
+                pvar_file = MergePgenFilesForPCA.output_pvar_file,
+                psam_file = MergePgenFilesForPCA.output_psam_file,  
                 PCA_loadings = pca_loadings_file,
                 PCA_AF = pca_af_file,
                 OUTNAME = target_prefix
         }
 
         if(defined(target_gcp_folder)){
-            call http_GcpUtils.MoveOrCopyOneFile as CopyFile_one {
+            call http_GcpUtils.MoveOrCopyOneFile as CopyFile_PCAone {
                 input:
                     source_file = ProjectPCA.output_pca_file,
                     is_move_file = false,
@@ -178,7 +178,7 @@ workflow agd_ancestry_workflow{
         }
 
         if(defined(target_gcp_folder)){
-            call http_GcpUtils.MoveOrCopyOneFile as CopyFile_two {
+            call http_GcpUtils.MoveOrCopyOneFile as CopyFile_PCAtwo {
                 input:
                     source_file = ProjectPCA.output_pca_variants,
                     is_move_file = false,
@@ -191,31 +191,31 @@ workflow agd_ancestry_workflow{
     if(run_scope){
         scatter (idx in range(length(chromosomes))) {
             String chromosome = chromosomes[idx]
-            File pgen_file = my_pgen_files[idx]
-            File pvar_file = my_pvar_files[idx]
-            File psam_file = my_psam_files[idx]
+            File pgen_file_for_scope = my_pgen_files[idx]
+            File pvar_file_for_scope = my_pvar_files[idx]
+            File psam_file_for_scope = my_psam_files[idx]
             String replaced_sample_name = "~{chromosome}.psam"
 
             #I think I need this to get the IDs correctly as GRIDS
 
-            call http_AgdUtils.ReplaceICAIdWithGrid as ReplaceICAIdWithGrid {
+            call http_AgdUtils.ReplaceICAIdWithGrid as ReplaceICAIdWithGridForScope {
                 input:
-                    input_psam = psam_file,
+                    input_psam = psam_file_for_scope,
                     id_map_file = id_map_file,
                     output_psam = replaced_sample_name
             }
             call PreparePlink as PreparePlink{
                 input:
-                    pgen_file = pgen_file,
-                    pvar_file = pvar_file,
-                    psam_file = ReplaceICAIdWithGrid.output_psam,
+                    pgen_file = pgen_file_for_scope,
+                    pvar_file = pvar_file_for_scope,
+                    psam_file = ReplaceICAIdWithGridForScope.output_psam,
                     long_range_ld_file = scope_long_range_ld_file,
                     plink2_maf_filter = scope_plink2_maf_filter,
                     plink2_LD_filter_option = scope_plink2_LD_filter_option,
                     chromosome = chromosome 
             }
         }
-        call http_GenotypeUtils.MergePgenFiles as MergePgenFiles{
+        call http_GenotypeUtils.MergePgenFiles as MergePgenFilesForScope{
             input:
                 pgen_files = PreparePlink.prepare_plink_unsupervised_output_pgen_file,
                 pvar_files = PreparePlink.prepare_plink_unsupervised_output_pvar_file,
@@ -223,7 +223,7 @@ workflow agd_ancestry_workflow{
                 target_prefix = target_prefix
         }
 
-        call ConvertPgenToBed{
+        call ConvertPgenToBed as ConvertPgenToBedForScope{
             input: 
                 pgen = MergePgenFiles.output_pgen_file, 
                 pvar = MergePgenFiles.output_pvar_file,
@@ -232,9 +232,9 @@ workflow agd_ancestry_workflow{
 
         call RunScopeUnsupervised{    
             input:
-                bed_file = ConvertPgenToBed.convert_Pgen_out_bed,
-                bim_file = ConvertPgenToBed.convert_Pgen_out_bim,
-                fam_file = ConvertPgenToBed.convert_Pgen_out_fam,
+                bed_file = ConvertPgenToBedForScope.convert_Pgen_out_bed,
+                bim_file = ConvertPgenToBedForScope.convert_Pgen_out_bim,
+                fam_file = ConvertPgenToBedForScope.convert_Pgen_out_fam,
                 K = K,
                 output_string = target_prefix,
                 seed = seed
@@ -243,15 +243,15 @@ workflow agd_ancestry_workflow{
         if(scope_supervised){
             call QCAllelesBim{
                 input:
-                    bim_file = ConvertPgenToBed.convert_Pgen_out_bim,
+                    bim_file = ConvertPgenToBedForScope.convert_Pgen_out_bim,
                     freq_file = select_first([CalculateFreq.freq_file, supervised_scope_reference_freq])
             }
 
             call PreparePlinkSupervised{
                 input:
-                    bed_file = ConvertPgenToBed.convert_Pgen_out_bed,
-                    bim_file = ConvertPgenToBed.convert_Pgen_out_bim,
-                    fam_file = ConvertPgenToBed.convert_Pgen_out_fam,
+                    bed_file = ConvertPgenToBedForScope.convert_Pgen_out_bed,
+                    bim_file = ConvertPgenToBedForScope.convert_Pgen_out_bim,
+                    fam_file = ConvertPgenToBedForScope.convert_Pgen_out_fam,
                     variant_list = QCAllelesBim.out_variants
             }
 
