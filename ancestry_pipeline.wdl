@@ -62,7 +62,7 @@ workflow agd_ancestry_workflow{
     }
 
     # If the user chose to use the supervised scope and there is no precalculated reference allele frequency provided, allele frequency can be calculated from provided plink files instead
-    if(scope_supervised & !defined(supervised_scope_reference_freq)){
+    if(scope_supervised && !defined(supervised_scope_reference_freq)){
         call CalculateFreq{
         input: 
             pgen_file = supervised_scope_reference_pgen_file,
