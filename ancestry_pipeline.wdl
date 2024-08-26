@@ -281,7 +281,7 @@ workflow agd_ancestry_workflow{
                     project_id = project_id,
                     target_gcp_folder = select_first([target_gcp_folder])
             }
-            if(defined(topmed_freq)){
+            if(scope_supervised){
                 call http_GcpUtils.MoveOrCopyThreeFiles as CopyFiles_two {
                     input:
                         source_file1 = select_first([RunScopeSupervised.outP]),
