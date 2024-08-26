@@ -61,9 +61,9 @@ workflow agd_ancestry_workflow{
         String? scope_plink2_maf_filter = "--maf 0.01"
 
         String? scope_plink2_LD_filter_option = "--indep-pairwise 50000 80 0.1"
-        File scope_long_range_ld_file
-        Int K = 4
-        Int seed = 1234
+        File? scope_long_range_ld_file
+        Int? K = 4
+        Int? seed = 1234
     }
 
     # If the user chose to use the supervised scope and there is no precalculated reference allele frequency provided, allele frequency can be calculated from provided plink files instead
