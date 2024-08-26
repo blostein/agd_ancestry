@@ -436,13 +436,13 @@ task ConvertPgenToBed{
 
 task Merge1000genomesAGD{
     input{
-        File? agd_bed_file
-        File? agd_bim_file
-        File? agd_fam_file
+        File agd_bed_file
+        File agd_bim_file
+        File agd_fam_file
 
-        File? TGP_bed_file
-        File? TGP_bim_file
-        File? TGP_fam_file
+        File TGP_bed_file
+        File TGP_bim_file
+        File TGP_fam_file
 
         String? chromosome
 
