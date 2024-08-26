@@ -90,7 +90,7 @@ workflow agd_ancestry_workflow{
             File pvar_file = source_pvar_files[idx]
             File psam_file = source_psam_files[idx]
 
-            call SubsetChromosomeTGP {
+            call SubsetChromosomeTGP{
                 input: 
                     pgen_file = spike_in_pgen_file,
                     pvar_file = spike_in_pvar_file,
@@ -351,7 +351,7 @@ task CalculateFreq{
 }
 
 ## for merging with spike-in datatask 
-SubsetChromosomeTGP {
+SubsetChromosomeTGP{
     input { 
         File pgen_file
         File pvar_file
@@ -396,7 +396,7 @@ SubsetChromosomeTGP {
     }
 }
 
-task ConvertPgenToBed {
+task ConvertPgenToBed{
     input {
         File pgen 
         File pvar 
