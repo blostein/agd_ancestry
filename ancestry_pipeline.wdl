@@ -92,9 +92,9 @@ workflow agd_ancestry_workflow{
 
     # If the user chose to use an external spike in, then first the spike-in data must be merged with the original data, and then the pipeline can proceed 
     if(external_spike_in){
-        Array[Files] source_bed_files_required=select_first([source_bed_files])
-        Array[Files] source_bim_files_required=select_first([source_bim_files])
-        Array[Files] source_fam_files_required=select_first([source_fam_files])
+        Array[File] source_bed_files_required=select_first([source_bed_files])
+        Array[File] source_bim_files_required=select_first([source_bim_files])
+        Array[File] source_fam_files_required=select_first([source_fam_files])
          scatter (idx in range(length(chromosomes))) {
             String chromosome_for_spike_in = chromosomes[idx]
             File bed_file_for_spike_in = source_bed_files_required[idx]
