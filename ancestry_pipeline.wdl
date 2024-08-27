@@ -43,6 +43,9 @@ workflow agd_ancestry_workflow{
 
         # optional inputs for spike in data - required if merging spike in data 
 
+        Array[File]? source_bed_files
+        Array[File]? source_bim_files
+        Array[File]? source_fam_files
         File? spike_in_pgen_file
         File? spike_in_pvar_file
         File? spike_in_psam_file
@@ -91,9 +94,9 @@ workflow agd_ancestry_workflow{
     if(external_spike_in){
          scatter (idx in range(length(chromosomes))) {
             String chromosome_for_spike_in = chromosomes[idx]
-            File pgen_file_for_spike_in = source_pgen_files[idx]
-            File pvar_file_file_for_spike_in = source_pvar_files[idx]
-            File psam_file_file_for_spike_in = source_psam_files[idx]
+            File bed_file_for_spike_in = source_bed_files[idx]
+            File bim_file_file_for_spike_in = source_bim_files[idx]
+            File fam_file_file_for_spike_in = source_fam_files[idx]
 
             call SubsetChromosomeTGP{
                 input: 
@@ -104,18 +107,11 @@ workflow agd_ancestry_workflow{
                     relatives_exclude = spike_in_relatives_exclude
             }
 
-            call ConvertPgenToBed as ConvertPgenToBed_spike_in {
-                input: 
-                    pgen = pgen_file_for_spike_in,
-                    pvar = pvar_file_file_for_spike_in,
-                    psam = psam_file_file_for_spike_in
-            }
-
             call Merge1000genomesAGD {
                 input:
-                    agd_bed_file = ConvertPgenToBed_spike_in.convert_Pgen_out_bed,
-                    agd_bim_file = ConvertPgenToBed_spike_in.convert_Pgen_out_bim,
-                    agd_fam_file = ConvertPgenToBed_spike_in.convert_Pgen_out_fam,
+                    agd_bed_file = bed_file_for_spike_in,
+                    agd_bim_file = bim_file_file_for_spike_in,
+                    agd_fam_file = fam_file_file_for_spike_in,
                     TGP_bed_file = SubsetChromosomeTGP.subset_reference_out_bed_file,
                     TGP_bim_file = SubsetChromosomeTGP.subset_reference_out_bim_file,
                     TGP_fam_file = SubsetChromosomeTGP.subset_reference_out_fam_file
