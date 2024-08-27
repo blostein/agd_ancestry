@@ -32,7 +32,7 @@ workflow agd_ancestry_workflow{
 
         # optional outputs for exporting 
         String? project_id
-        String? target_gcp_folder
+        String target_gcp_folder
 
         # optional inputs for PCA - required if running PCA 
 
