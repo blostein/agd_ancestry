@@ -860,9 +860,9 @@ task RunScopeSupervised{
         File bim_file
         File fam_file
 
-        Int K
+        Int? K
         String output_string
-        Int seed
+        Int? seed
 
         File? topmed_freq
 
