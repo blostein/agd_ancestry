@@ -297,6 +297,10 @@ workflow agd_ancestry_workflow{
             }
         }
     }
+
+ output {
+        Array[File] ancestry_outputs = select_all([CopyFileFreq.output_file, CopyFile_PCAone.output_file, CopyFile_PCAtwo.output_file, CopyFiles_one.output_file1, CopyFiles_one.output_file2, CopyFiles_one.output_file3, CopyFiles_two.output_file1, CopyFiles_two.output_file2, CopyFiles_two.output_file3])
+    }
 }
 
 
