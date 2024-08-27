@@ -814,9 +814,9 @@ task RunScopeUnsupervised{
         File bim_file
         File fam_file
 
-        Int K
+        Int? K
         String output_string
-        Int seed
+        Int? seed
 
         Int memory_gb = 60
         String docker = "blosteinf/scope:0.1"
