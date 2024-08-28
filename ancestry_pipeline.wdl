@@ -117,7 +117,7 @@ workflow agd_ancestry_workflow{
                     agd_fam_file = fam_file_for_spike_in,
                     TGP_bed_file = SubsetChromosomeTGP.subset_reference_out_bed_file,
                     TGP_bim_file = SubsetChromosomeTGP.subset_reference_out_bim_file,
-                    TGP_fam_file = SubsetChromosomeTGP.subset_reference_out_fam_file
+                    TGP_fam_file = SubsetChromosomeTGP.subset_reference_out_fam_file,
                     chromosome = chromosome_for_spike_in
             }
         }
