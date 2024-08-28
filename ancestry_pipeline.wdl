@@ -309,10 +309,10 @@ workflow agd_ancestry_workflow{
 ## for frequency calculation 
 task CalculateFreq{
     input{ 
-        File? pgen_file
-        File? pvar_file
-        File? psam_file
-        File? superpop_file
+        File pgen_file
+        File pvar_file
+        File psam_file
+        File superpop_file
         File? relatives_exclude
 
         String? plink2_maf_filter = "--maf 0.001"
@@ -322,7 +322,7 @@ task CalculateFreq{
     }
 
     Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 4) + 20
-    String out_file = if defined(pgen_file) then basename(pgen_file, ".pgen") + "_within_superpop_freqs.frq.strat" else "within_superpop_freqs.frq.strat"
+    String out_file =  basename(pgen_file, ".pgen") + "_within_superpop_freqs.frq.strat"
 
     command <<<
         # take the TGP data, remove duplicates, restrict to biallelic SNPs (necessary since cannot calculate frq within in plink2 in the same way as in plink1), and calculate within super populations 
