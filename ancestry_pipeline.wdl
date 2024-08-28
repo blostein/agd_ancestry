@@ -98,8 +98,8 @@ workflow agd_ancestry_workflow{
          scatter (idx in range(length(chromosomes))) {
             String chromosome_for_spike_in = chromosomes[idx]
             File bed_file_for_spike_in = source_bed_files_required[idx]
-            File bim_file_file_for_spike_in = source_bim_files_required[idx]
-            File fam_file_file_for_spike_in = source_fam_files_required[idx]
+            File bim_file_for_spike_in = source_bim_files_required[idx]
+            File fam_file_for_spike_in = source_fam_files_required[idx]
 
             call SubsetChromosomeTGP{
                 input: 
@@ -112,12 +112,13 @@ workflow agd_ancestry_workflow{
 
             call Merge1000genomesAGD {
                 input:
-                    agd_bed_file = source_bed_files_required,
-                    agd_bim_file = source_bim_files_required,
-                    agd_fam_file = source_fam_files_required,
+                    agd_bed_file = bed_file_for_spike_in,
+                    agd_bim_file = bim_file_for_spike_in,
+                    agd_fam_file = fam_file_for_spike_in,
                     TGP_bed_file = SubsetChromosomeTGP.subset_reference_out_bed_file,
                     TGP_bim_file = SubsetChromosomeTGP.subset_reference_out_bim_file,
                     TGP_fam_file = SubsetChromosomeTGP.subset_reference_out_fam_file
+                    chromosome = chromosome_for_spike_in
             }
         }
     }
