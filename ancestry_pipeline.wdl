@@ -71,12 +71,17 @@ workflow agd_ancestry_workflow{
 
     # If the user chose to use the supervised scope and there is no precalculated reference allele frequency provided, allele frequency can be calculated from provided plink files instead
     if(scope_supervised && !defined(supervised_scope_reference_freq)){
+        File required_supervised_scope_reference_pgen_file = supervised_scope_reference_pgen_file
+        File required_supervised_scope_reference_pvar_file = supervised_scope_reference_pvar_file
+        File required_supervised_scope_reference_psam_file = supervised_scope_reference_psam_file
+        File required_supervised_scope_reference_superpop_file = supervised_scope_reference_superpop_file
+
         call CalculateFreq{
         input: 
-            pgen_file = supervised_scope_reference_pgen_file,
-            pvar_file = supervised_scope_reference_pvar_file,
-            psam_file = supervised_scope_reference_psam_file,
-            superpop_file = supervised_scope_reference_superpop_file,
+            pgen_file = required_supervised_scope_reference_pgen_file,
+            pvar_file = required_supervised_scope_reference_pvar_file,
+            psam_file = required_supervised_scope_reference_psam_file,
+            superpop_file = required_supervised_scope_reference_superpop_file,
             relatives_exclude = supervised_scope_reference_relatives_exclude
         }
         if(defined(target_gcp_folder)){
@@ -359,7 +364,7 @@ task CalculateFreq{
     }
 }
 
-## for merging with spike-in datatask 
+## for merging with spike-in data task 
 task SubsetChromosomeTGP {
     input {
         File? pgen_file
