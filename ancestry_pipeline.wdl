@@ -327,7 +327,8 @@ task CalculateFreq{
     }
 
     Int disk_size = ceil(size([pgen_file, psam_file, pvar_file], "GB")  * 4) + 20
-    String out_file =  basename(pgen_file, ".pgen") + "_within_superpop_freqs.frq.strat"
+    String out_name =  basename(pgen_file, ".pgen") + "_within_superpop_freqs"
+    String out_file = out_name + ".frq.strat"
 
     command <<<
         # take the TGP data, remove duplicates, restrict to biallelic SNPs (necessary since cannot calculate frq within in plink2 in the same way as in plink1), and calculate within super populations 
@@ -349,7 +350,7 @@ task CalculateFreq{
         plink --bfile tgp_nodup \
             --allow-extra-chr \
             --freq --within ~{superpop_file} \
-            --out ~{out_file}
+            --out ~{out_name}
     >>>
 
     runtime {
